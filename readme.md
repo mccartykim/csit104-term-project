@@ -9,7 +9,7 @@ A few ideas
   * Asteroids
   * Pacman
   * Flappy Bird
-** Canablat-style one-button jump game
+* Canablat-style one-button jump game
     * Vertical shooter
 * More complicated/original
   * Rocket sim (2D kerbals)
