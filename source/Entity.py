@@ -1,5 +1,3 @@
-
-
 class Entity(object):
 
     #Process user input, if relevant.

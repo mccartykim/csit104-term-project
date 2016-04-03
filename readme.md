@@ -6,10 +6,10 @@ As of now, I'm considering an Asteroids clone, as it has simple controls and geo
 
 A few ideas
 * Arcade clones
-..* Asteroids
-..* Pacman
-..* Flappy Bird
+  * Asteroids
+  * Pacman
+  * Flappy Bird
 ** Canablat-style one-button jump game
-..* Vertical shooter
+    * Vertical shooter
 * More complicated/original
-..* Rocket sim (2D kerbals)
+  * Rocket sim (2D kerbals)
