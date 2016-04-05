@@ -2,6 +2,7 @@ import pytest
 #import scripts in parent directory
 from Vect2 import Vect2
 import copy
+import math
 
 #Helper function for near values, as in the case of float comparisons
 #similar to isClose function, which is only in python 3.5.
@@ -56,4 +57,10 @@ def test_normalize():
     assert isNear(t1.normalize().mag(), 1)
 
 #Functions to plan out:
-#getAngle: Radians or degrees?
+def test_fromAng():
+    t1 = Vect2.fromAngle(0)
+    assert isNear(t1.x, 1) and isNear(t1.y, 0)
+
+def test_toAngle():
+    t1 = Vect2(0, 1)
+    assert isNear(t1.toAngle(), math.pi / 2)

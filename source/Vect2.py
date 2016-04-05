@@ -24,3 +24,12 @@ class Vect2(object):
     def normalize(self):
         self *= (1/self.mag())
         return self
+
+    #Create a normal vector from an angle in radians
+    @staticmethod
+    def fromAngle(ang):
+        return Vect2(math.cos(ang), math.sin(ang))
+
+    #Return an angle in radians from the vector object
+    def toAngle(self):
+        return math.atan2(self.y, self.x)
