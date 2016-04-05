@@ -1,5 +1,7 @@
+from Vect2 import *
 #Constant to tune for ship's acceleration per frame
 SHIP_ACC = 1;
+SHIP_TURN = 1
 class Entity(object):
     #Process user input, if relevant.
     def input(self, controller):
@@ -31,7 +33,7 @@ class Movable(Entity):
         self.acc += acc
 
 class Inertial(Movable):
-    def __init__(self, **kwargs, mass=1):
+    def __init__(self, mass=1, **kwargs):
         super(Inertial, self).__init__(**kwargs)
         self.mass=mass
 
@@ -50,12 +52,17 @@ class Player(Inertial):
         if (controller["acc"]):
             #There's a bit going on here.  We create a normal vector pointing at the ship's heading
             #And then we scale it to the acceleration per frame constant.
-            self.acc += Vect2.fromAngle(angle) * SHIP_ACC
+            self.acc += Vect2.fromAngle(self.angle) * SHIP_ACC
         if (controller["left"]):
             self.angle += SHIP_TURN
         if (controller["right"]):
             self.angle -= SHIP_TURN
 
-    def draw():
-        #TODO: Render ship
-        pass
+    def draw(self):
+        #Return a "data object" for pyglet's graphics.draw command.
+        #front of the ship
+        bow = ( Vect2.fromAngle(self.angle) * 10 ) + self.pos
+        port = (Vect2.fromAngle(self.angle + (120 * math.pi/180)) * 5) + self.pos
+        starboard = (Vect2.fromAngle(self.angle - (120 * math.pi/180)) *5) + self.pos
+        points = (bow.x, bow.y, port.x, port.y, starboard.x, starboard.y)
+        return ('v2f', points)
