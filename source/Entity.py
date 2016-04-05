@@ -1,7 +1,7 @@
 from Vect2 import *
 #Constant to tune for ship's acceleration per frame
 SHIP_ACC = 1;
-SHIP_TURN = 1
+SHIP_TURN = 5 * math.pi/180
 class Entity(object):
     #Process user input, if relevant.
     def input(self, controller):
@@ -42,13 +42,15 @@ class Inertial(Movable):
 
 #Player is an object with movement, controlled by user input
 class Player(Inertial):
-    def __init__(self):
+    def __init__(self, pos=Vect2(0,0)):
         #I may move these defaults to the constructor later
-        super(Player, self).__init__(mass = 1)
+        super(Player, self).__init__(mass = 1, position=pos)
 
     #Controller is a dict containing the state of the controls
     def input(self, controller):
         #TODO: Shooting mechanism
+        if (controller["fire"]):
+            pass
         if (controller["acc"]):
             #There's a bit going on here.  We create a normal vector pointing at the ship's heading
             #And then we scale it to the acceleration per frame constant.
@@ -66,3 +68,8 @@ class Player(Inertial):
         starboard = (Vect2.fromAngle(self.angle - (120 * math.pi/180)) *5) + self.pos
         points = (bow.x, bow.y, port.x, port.y, starboard.x, starboard.y)
         return ('v2f', points)
+
+    def update(self, dt):
+        super().update(dt)
+        #TODO: Check bounds
+        #TODO: Clamp velocity
