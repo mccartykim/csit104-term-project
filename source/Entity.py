@@ -1,7 +1,10 @@
+import random
 from Vect2 import *
+import pyglet
 #Constant to tune for ship's acceleration per frame
 SHIP_ACC = 1;
 SHIP_TURN = 5 * math.pi/180
+MAX_VELOCITY = 3
 class Entity(object):
     #Process user input, if relevant.
     def input(self, controller):
@@ -77,8 +80,27 @@ class Player(Inertial):
         port = (Vect2.fromAngle(self.angle + (120 * math.pi/180)) * 5) + self.pos
         starboard = (Vect2.fromAngle(self.angle - (120 * math.pi/180)) *5) + self.pos
         points = (bow.x, bow.y, port.x, port.y, starboard.x, starboard.y)
-        return ('v2f', points)
+        return 3, pyglet.gl.GL_TRIANGLES, ( 'v2f', points )
 
     def update(self, dt):
         super().update(dt)
-        #TODO: Clamp velocity
+        if self.vel.mag() > MAX_VELOCITY:
+            self.vel.mag = self.vel.normalize() * MAX_VELOCITY
+
+class Asteroid(Inertial):
+    def __init__(self, size=3, position=Vect2(0,0)):
+        #Asteroids come in 3 sizes: 3 is biggest, one is smallest.
+        super(Asteroid, self).__init__(mass=size, position=position)
+        self.hit_radius = size*10
+        #property to check on deletion loop
+        self.alive = True
+        self.angleV = random.random(-.5, .5)
+        #Consider making angular velocity a property of spawning/velocity
+
+    def update(self, dt):
+        super().update(dt)
+        self.angle += self.angleV
+
+    def draw(self):
+        #TODO: Return a GL_POLYGON
+        pass

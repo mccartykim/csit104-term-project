@@ -17,6 +17,9 @@ def on_draw():
     #On a proper engine the controller would probably be its own class.
     controller = {'acc': keys[key.W], 'left': keys[key.A], 'right':keys[key.D], 'fire':key.SPACE}
     player.input(controller)
-    pyglet.graphics.draw(3, pyglet.gl.GL_TRIANGLES, player.draw())
+    #TODO: Score
+    #TODO: Asteroids
+    #TODO: Lives
+    pyglet.graphics.draw(*player.draw())
 
 pyglet.app.run()
