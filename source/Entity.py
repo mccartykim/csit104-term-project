@@ -17,17 +17,27 @@ class Entity(object):
 
 #An entity that can move with basic physics
 class Movable(Entity):
-    def __init__(self, position=Vect2(0,0), velocity=Vect2(0,0), acceleration=Vect2(0,0), angle=0):
+    def __init__(self, position=Vect2(0,0), velocity=Vect2(0,0), acceleration=Vect2(0,0), angle=0, bounds= ( 0, 0, 800, 400 )) :
         self.pos = position
         self.vel = velocity
         self.acc = acceleration
         self.angle = angle
+        self.bounds = bounds
 
     #generate new position and velocity.  Let DT be the time since the last update.
     def update(self, dt):
         self.vel += self.acc
         self.acc *= 0 #Acceleration must be added each time.
         self.pos += (self.vel * dt)
+        #Add bounds checking
+        if self.pos.x < self.bounds[0]:
+            self.pos.x = self.bounds[2]
+        elif self.pos.x > self.bounds[2]:
+            self.pos.x = self.bounds[0]
+        if self.pos.y < self.bounds[1]:
+            self.pos.y = self.bounds[3]
+        elif self.pos.y > self.bounds[3]:
+            self.pos.y = self.bounds[1]
 
     def addAcc(self, acc):
         self.acc += acc
@@ -71,5 +81,4 @@ class Player(Inertial):
 
     def update(self, dt):
         super().update(dt)
-        #TODO: Check bounds
         #TODO: Clamp velocity
