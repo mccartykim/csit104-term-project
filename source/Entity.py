@@ -4,7 +4,7 @@ import pyglet
 #Constant to tune for ship's acceleration per frame
 SHIP_ACC = 1;
 SHIP_TURN = 5 * math.pi/180
-MAX_VELOCITY = 3
+MAX_VELOCITY = 300
 class Entity(object):
     #Process user input, if relevant.
     def input(self, controller):
@@ -85,7 +85,7 @@ class Player(Inertial):
     def update(self, dt):
         super().update(dt)
         if self.vel.mag() > MAX_VELOCITY:
-            self.vel.mag = self.vel.normalize() * MAX_VELOCITY
+            self.vel = self.vel.normalize() * MAX_VELOCITY
 
 class Asteroid(Inertial):
     def __init__(self, size=3, position=Vect2(0,0)):
@@ -94,13 +94,24 @@ class Asteroid(Inertial):
         self.hit_radius = size*10
         #property to check on deletion loop
         self.alive = True
-        self.angleV = random.random(-.5, .5)
+        self.angleV = random.uniform(-.5, .5)
         #Consider making angular velocity a property of spawning/velocity
+        self.shape = []
+        for i in range(0, 16):
+            radius = self.hit_radius * random.uniform(.75, 1.25)
+            self.shape.append(math.cos(2*math.pi*i/15)*radius)
+            self.shape.append(math.sin(2*math.pi*i/15)*radius)
 
     def update(self, dt):
         super().update(dt)
         self.angle += self.angleV
 
     def draw(self):
-        #TODO: Return a GL_POLYGON
-        pass
+        points = []
+        radius = self.hit_radius
+        for i, e in enumerate(self.shape):
+            if i % 2 == 0:
+                points.append(e + self.pos.x)
+            else:
+                points.append(e + self.pos.y)
+        return (16, pyglet.gl.GL_POLYGON, ('v2f', tuple(points)) )

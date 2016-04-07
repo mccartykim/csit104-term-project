@@ -10,6 +10,11 @@ window.push_handlers(keys)
 
 player = Player(Vect2(x=window.width/2, y=window.height/2))
 pyglet.clock.schedule(player.update)
+
+test_asteroid = Asteroid()
+test_asteroid.vel = Vect2(1, 1)
+pyglet.clock.schedule(test_asteroid.update)
+
 @window.event
 def on_draw():
     window.clear()
@@ -19,7 +24,9 @@ def on_draw():
     player.input(controller)
     #TODO: Score
     #TODO: Asteroids
+    pyglet.graphics.draw(*test_asteroid.draw())
     #TODO: Lives
+    #TODO: Batch graphics
     pyglet.graphics.draw(*player.draw())
 
 pyglet.app.run()
