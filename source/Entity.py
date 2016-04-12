@@ -80,7 +80,7 @@ class Player(Inertial):
         port = (Vect2.fromAngle(self.angle + (120 * math.pi/180)) * 5) + self.pos
         starboard = (Vect2.fromAngle(self.angle - (120 * math.pi/180)) *5) + self.pos
         points = (bow.x, bow.y, port.x, port.y, starboard.x, starboard.y)
-        return 3, pyglet.gl.GL_TRIANGLES, ( 'v2f', points )
+        return 3, pyglet.gl.GL_LINE_LOOP, ( 'v2f', points )
 
     def update(self, dt):
         super().update(dt)
@@ -114,4 +114,4 @@ class Asteroid(Inertial):
                 points.append(e + self.pos.x)
             else:
                 points.append(e + self.pos.y)
-        return (16, pyglet.gl.GL_POLYGON, ('v2f', tuple(points)) )
+        return (16, pyglet.gl.GL_LINE_LOOP, ('v2f', tuple(points)) )
