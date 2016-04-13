@@ -15,6 +15,9 @@ test_asteroid = Asteroid()
 test_asteroid.vel = Vect2(1, 1)
 pyglet.clock.schedule(test_asteroid.update)
 
+test_bullet = Bullet(Vect2(0,0), Vect2(50,50), (math.pi/4))
+pyglet.clock.schedule(test_bullet.update)
+
 @window.event
 def on_draw():
     window.clear()
@@ -29,6 +32,7 @@ def on_draw():
     #TODO: Lives
     #TODO: Batch graphics
     batch.add(*player.draw())
+    if test_bullet.isAlive(): batch.add(*test_bullet.draw())
     batch.draw()
 
 pyglet.app.run()

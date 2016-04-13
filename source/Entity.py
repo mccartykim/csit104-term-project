@@ -132,3 +132,21 @@ class Asteroid(Inertial):
                 points.append(e + self.pos.y)
         points = loop_lines(points)
         return (len(points)//2, pyglet.gl.GL_LINES, None, ('v2f', points ))
+
+#Consider particle class, for effects
+
+class Bullet(Movable):
+    def __init__(self, pos, vel, angle, lifespan=10):
+        super(Bullet, self).__init__(position=pos, angle=angle, velocity=vel)
+        self.life=lifespan
+
+    def update(self, dt):
+        super().update(dt)
+        self.life -= dt
+
+    def isAlive(self):
+        return (self.life > 0)
+
+    def draw(self):
+        points = [math.cos(self.angle)*-5 + self.pos.x, math.sin(self.angle)*-5 + self.pos.y, math.cos(self.angle) + self.pos.x, math.sin(self.angle) + self.pos.y]
+        return 2, pyglet.gl.GL_LINES, None, ('v2f', tuple(points))
