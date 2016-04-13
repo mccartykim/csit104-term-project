@@ -22,11 +22,13 @@ def on_draw():
     #On a proper engine the controller would probably be its own class.
     controller = {'acc': keys[key.W], 'left': keys[key.A], 'right':keys[key.D], 'fire':key.SPACE}
     player.input(controller)
+    batch = pyglet.graphics.Batch()
     #TODO: Score
     #TODO: Asteroids
-    pyglet.graphics.draw(*test_asteroid.draw())
+    batch.add(*test_asteroid.draw())
     #TODO: Lives
     #TODO: Batch graphics
-    pyglet.graphics.draw(*player.draw())
+    batch.add(*player.draw())
+    batch.draw()
 
 pyglet.app.run()

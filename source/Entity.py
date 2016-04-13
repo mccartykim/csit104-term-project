@@ -5,6 +5,21 @@ import pyglet
 SHIP_ACC = 1;
 SHIP_TURN = 5 * math.pi/180
 MAX_VELOCITY = 300
+
+
+def loop_lines(points):
+     #test if points are even
+    out = []
+    if len(points) % 2 != 0:
+        raise ValueError("Uneven list of points")
+    i = 0
+    while i < len(points) - 3:
+        out.extend(points[i:i+4])
+        i += 2
+    out.extend(points[-2::])
+    out.extend(points[0:2])
+    return tuple(out)
+
 class Entity(object):
     #Process user input, if relevant.
     def input(self, controller):
@@ -80,7 +95,8 @@ class Player(Inertial):
         port = (Vect2.fromAngle(self.angle + (120 * math.pi/180)) * 5) + self.pos
         starboard = (Vect2.fromAngle(self.angle - (120 * math.pi/180)) *5) + self.pos
         points = (bow.x, bow.y, port.x, port.y, starboard.x, starboard.y)
-        return 3, pyglet.gl.GL_LINE_LOOP, ( 'v2f', points )
+        points = loop_lines(points)
+        return len(points)//2, pyglet.gl.GL_LINES, None, ( 'v2f', points )
 
     def update(self, dt):
         super().update(dt)
@@ -114,4 +130,5 @@ class Asteroid(Inertial):
                 points.append(e + self.pos.x)
             else:
                 points.append(e + self.pos.y)
-        return (16, pyglet.gl.GL_LINE_LOOP, ('v2f', tuple(points)) )
+        points = loop_lines(points)
+        return (len(points)//2, pyglet.gl.GL_LINES, None, ('v2f', points ))
