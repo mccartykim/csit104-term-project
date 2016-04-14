@@ -7,6 +7,7 @@ SHIP_TURN = 5 * math.pi/180
 MAX_VELOCITY = 300
 
 
+#Helper function to create batch-friendly line loops for GL_LINES primatives
 def loop_lines(points):
      #test if points are even
     out = []
@@ -32,6 +33,10 @@ class Entity(object):
     #Render the object, if applicable.
     def draw(self):
         pass
+
+    def isAlive(self):
+        #Meant to be overriden on mortal objects
+        return True
 
 #An entity that can move with basic physics
 class Movable(Entity):
