@@ -28,7 +28,6 @@ def on_draw():
     controller = {'acc': keys[key.W], 'left': keys[key.A], 'right':keys[key.D], 'fire':keys[key.SPACE]}
     player.input(controller)
     batch = pyglet.graphics.Batch()
-    #TODO: Bullet spawning
     if player.isFiring():
         bullet = Bullet(player.pos.getCopy(), player.angle)
         pyglet.clock.schedule(bullet.update)
@@ -38,11 +37,10 @@ def on_draw():
     for e in entities:
         batch.add(*e.draw())
     #TODO: Lives
-    #TODO: Batch graphics
     for e in entities:
         if not e.isAlive():
-            entities.remove(e)
-            del e
+            pyglet.clock.unschedule(e.update)
+    entities[:] = [e for e in entities if e.isAlive()]
     batch.draw()
 
 pyglet.app.run()
