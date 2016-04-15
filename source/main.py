@@ -17,9 +17,6 @@ test_asteroid = Asteroid()
 test_asteroid.vel = Vect2(5,5)
 entities.append(test_asteroid)
 
-test_bullet = Bullet(Vect2(0,0), Vect2(50,50), (math.pi/4))
-entities.append(test_bullet)
-
 for e in entities:
     pyglet.clock.schedule(e.update)
 
@@ -28,9 +25,14 @@ def on_draw():
     window.clear()
     #map keys to input object
     #On a proper engine the controller would probably be its own class.
-    controller = {'acc': keys[key.W], 'left': keys[key.A], 'right':keys[key.D], 'fire':key.SPACE}
+    controller = {'acc': keys[key.W], 'left': keys[key.A], 'right':keys[key.D], 'fire':keys[key.SPACE]}
     player.input(controller)
     batch = pyglet.graphics.Batch()
+    #TODO: Bullet spawning
+    if player.isFiring():
+        bullet = Bullet(player.pos.getCopy(), player.angle)
+        pyglet.clock.schedule(bullet.update)
+        entities.append(bullet)
     #TODO: Score
     #TODO: Asteroids
     for e in entities:
@@ -40,6 +42,7 @@ def on_draw():
     for e in entities:
         if not e.isAlive():
             entities.remove(e)
+            del e
     batch.draw()
 
 pyglet.app.run()

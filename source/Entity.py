@@ -78,12 +78,16 @@ class Player(Inertial):
     def __init__(self, pos=Vect2(0,0)):
         #I may move these defaults to the constructor later
         super(Player, self).__init__(mass = 1, position=pos)
+        self.firing = False
+        self.FIRE_DELAY = 1
+        self.cooldown = self.FIRE_DELAY
 
     #Controller is a dict containing the state of the controls
     def input(self, controller):
         #TODO: Shooting mechanism
-        if (controller["fire"]):
-            pass
+        if (controller["fire"] and self.cooldown >= self.FIRE_DELAY):
+            self.firing = True
+            self.cooldown = 0
         if (controller["acc"]):
             #There's a bit going on here.  We create a normal vector pointing at the ship's heading
             #And then we scale it to the acceleration per frame constant.
@@ -92,6 +96,14 @@ class Player(Inertial):
             self.angle += SHIP_TURN
         if (controller["right"]):
             self.angle -= SHIP_TURN
+
+    #Check if player is firing for the main loop to determine if it should spawn bullets
+    def isFiring(self):
+        if(self.firing):
+            self.firing = False
+            return True
+        else:
+            return False
 
     def draw(self):
         #Return a "data object" for pyglet's graphics.draw command.
@@ -107,6 +119,8 @@ class Player(Inertial):
         super().update(dt)
         if self.vel.mag() > MAX_VELOCITY:
             self.vel = self.vel.normalize() * MAX_VELOCITY
+        if self.cooldown < self.FIRE_DELAY:
+            self.cooldown += dt
 
 class Asteroid(Inertial):
     def __init__(self, size=3, position=Vect2(0,0)):
@@ -141,7 +155,8 @@ class Asteroid(Inertial):
 #Consider particle class, for effects
 
 class Bullet(Movable):
-    def __init__(self, pos, vel, angle, lifespan=10):
+    def __init__(self, pos, angle, lifespan=5, speed=50):
+        vel = Vect2(math.cos(angle)*speed, math.sin(angle)*speed)
         super(Bullet, self).__init__(position=pos, angle=angle, velocity=vel)
         self.life=lifespan
 

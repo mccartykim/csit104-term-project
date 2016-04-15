@@ -1,4 +1,5 @@
 import math
+
 class Vect2(object):
     def __init__(self, x=0, y=0):
         self.x=x
@@ -33,3 +34,7 @@ class Vect2(object):
     #Return an angle in radians from the vector object
     def toAngle(self):
         return math.atan2(self.y, self.x)
+
+    #Avoid issues with pass by reference by returning a new Vect2
+    def getCopy(self):
+        return Vect2(self.x, self.y)
