@@ -38,3 +38,6 @@ class Vect2(object):
     #Avoid issues with pass by reference by returning a new Vect2
     def getCopy(self):
         return Vect2(self.x, self.y)
+
+    def getDistance(self, other):
+        return math.sqrt((other.x - self.x)**2 + (other.y-self.y)**2 )

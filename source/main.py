@@ -33,14 +33,20 @@ def on_draw():
         pyglet.clock.schedule(bullet.update)
         entities.append(bullet)
     #TODO: Score
-    #TODO: Asteroids
+    #Loop over all the entities that are bullets
+    for bullet in [e for e in entities if isinstance(e, Bullet)]:
+        for asteroid in [e for e in entities if isinstance(e, Asteroid)]:
+            if bullet.overlaps(asteroid.hit_radius, asteroid.pos.getCopy()):
+                print("Overlap")
+                asteroid.alive = False
+                bullet.life = 0
     for e in entities:
         batch.add(*e.draw())
     #TODO: Lives
     for e in entities:
         if not e.isAlive():
             pyglet.clock.unschedule(e.update)
-    entities[:] = [e for e in entities if e.isAlive()]
+            entities[:] = [e for e in entities if e.isAlive()]
     batch.draw()
 
 pyglet.app.run()

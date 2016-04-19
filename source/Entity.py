@@ -65,6 +65,10 @@ class Movable(Entity):
     def addAcc(self, acc):
         self.acc += acc
 
+    def overlaps(self, hitRadius, hitPos):
+        #if this entity is inside the other entity's radius, return true
+        return (self.pos.getDistance(hitPos) < hitRadius)
+
 class Inertial(Movable):
     def __init__(self, mass=1, **kwargs):
         super(Inertial, self).__init__(**kwargs)
@@ -140,6 +144,8 @@ class Asteroid(Inertial):
     def update(self, dt):
         super().update(dt)
         self.angle += self.angleV
+    def isAlive(self):
+        return self.alive
 
     def draw(self):
         points = []
@@ -170,3 +176,4 @@ class Bullet(Movable):
     def draw(self):
         points = [math.cos(self.angle)*-5 + self.pos.x, math.sin(self.angle)*-5 + self.pos.y, math.cos(self.angle) + self.pos.x, math.sin(self.angle) + self.pos.y]
         return 2, pyglet.gl.GL_LINES, None, ('v2f', tuple(points))
+
