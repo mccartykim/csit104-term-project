@@ -33,6 +33,7 @@ def on_draw():
         pyglet.clock.schedule(bullet.update)
         entities.append(bullet)
     #TODO: Score
+    #TODO: Asteroid spawner
     #Loop over all the entities that are bullets
     for bullet in [e for e in entities if isinstance(e, Bullet)]:
         for asteroid in [e for e in entities if isinstance(e, Asteroid)]:
