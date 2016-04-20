@@ -70,12 +70,12 @@ class Movable(Entity):
         return (self.pos.getDistance(hitPos) < hitRadius)
 
 class Inertial(Movable):
-    def __init__(self, mass=1, **kwargs):
+    def __init__(self, mass=1.0, **kwargs):
         super(Inertial, self).__init__(**kwargs)
         self.mass=mass
 
     def addForce(self, fVect):
-        self.acc += (fVect * 1/self.mass)
+        self.acc += (fVect.getCopy() * (1.0/self.mass))
 
 #Player is an object with movement, controlled by user input
 class Player(Inertial):
@@ -130,10 +130,13 @@ class Asteroid(Inertial):
     def __init__(self, size=3, position=Vect2(0,0)):
         #Asteroids come in 3 sizes: 3 is biggest, one is smallest.
         super(Asteroid, self).__init__(mass=size, position=position)
+        #FIXME: Magic constant, perhaps should trigger this with boolean
+        self.addForce(Vect2.random()* 100)
         self.hit_radius = size*10
+        self.size = size
         #property to check on deletion loop
         self.alive = True
-        self.angleV = random.uniform(-.5, .5)
+        self.angleV = random.uniform(-1, 1)
         #Consider making angular velocity a property of spawning/velocity
         self.shape = []
         for i in range(0, 16):

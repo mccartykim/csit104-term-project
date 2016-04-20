@@ -3,22 +3,21 @@ from Entity import *
 from pyglet.window import key
 WIDTH = 800
 HEIGHT = 400
+
+def addEntity(ent):
+    entities.append(ent)
+    pyglet.clock.schedule(ent.update)
+
 window = pyglet.window.Window(WIDTH, HEIGHT)
 #Keys holds a handler that keeps track of keyboard state, part of pyglet
 keys = pyglet.window.key.KeyStateHandler()
+targetNo = 3; #number of asteroids to spawn
 window.push_handlers(keys)
 
 entities = []
 
 player = Player(Vect2(x=window.width/2, y=window.height/2))
-entities.append(player)
-
-test_asteroid = Asteroid()
-test_asteroid.vel = Vect2(5,5)
-entities.append(test_asteroid)
-
-for e in entities:
-    pyglet.clock.schedule(e.update)
+addEntity(player)
 
 @window.event
 def on_draw():
@@ -29,17 +28,22 @@ def on_draw():
     player.input(controller)
     batch = pyglet.graphics.Batch()
     if player.isFiring():
-        bullet = Bullet(player.pos.getCopy(), player.angle)
-        pyglet.clock.schedule(bullet.update)
-        entities.append(bullet)
+        addEntity(Bullet(player.pos.getCopy(), player.angle))
     #TODO: Score
-    #TODO: Asteroid spawner
+    asteroids = [e for e in entities if isinstance(e, Asteroid)]
+    if len(asteroids) < targetNo:
+        nAsteroid = Asteroid(3, Vect2(0,0))
+        asteroids.append(nAsteroid)
+        addEntity(nAsteroid)
     #Loop over all the entities that are bullets
     for bullet in [e for e in entities if isinstance(e, Bullet)]:
-        for asteroid in [e for e in entities if isinstance(e, Asteroid)]:
+        for asteroid in asteroids:
             if bullet.overlaps(asteroid.hit_radius, asteroid.pos.getCopy()):
-                print("Overlap")
                 asteroid.alive = False
+                if asteroid.size > 1:
+                    #add two baby asteroids!
+                    addEntity(Asteroid(asteroid.size-1,asteroid.pos.getCopy()))
+                    addEntity(Asteroid(asteroid.size-1,asteroid.pos.getCopy()))
                 bullet.life = 0
     for e in entities:
         batch.add(*e.draw())

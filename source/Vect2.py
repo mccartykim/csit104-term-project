@@ -1,4 +1,5 @@
 import math
+import random
 
 class Vect2(object):
     def __init__(self, x=0, y=0):
@@ -41,3 +42,7 @@ class Vect2(object):
 
     def getDistance(self, other):
         return math.sqrt((other.x - self.x)**2 + (other.y-self.y)**2 )
+
+    @staticmethod
+    def random():
+        return Vect2.fromAngle(random.uniform(0, 2*math.pi))
