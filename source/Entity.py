@@ -88,7 +88,6 @@ class Player(Inertial):
 
     #Controller is a dict containing the state of the controls
     def input(self, controller):
-        #TODO: Shooting mechanism
         if (controller["fire"] and self.cooldown >= self.FIRE_DELAY):
             self.firing = True
             self.cooldown = 0
@@ -126,6 +125,10 @@ class Player(Inertial):
         if self.cooldown < self.FIRE_DELAY:
             self.cooldown += dt
 
+    #TODO: Destub me!
+    def kill(self):
+        pass
+
 class Asteroid(Inertial):
     def __init__(self, size=3, position=Vect2(0,0)):
         #Asteroids come in 3 sizes: 3 is biggest, one is smallest.
@@ -161,6 +164,9 @@ class Asteroid(Inertial):
         points = loop_lines(points)
         return (len(points)//2, pyglet.gl.GL_LINES, None, ('v2f', points ))
 
+    def kill(self):
+        self.alive = False
+
 #Consider particle class, for effects
 
 class Bullet(Movable):
@@ -179,4 +185,7 @@ class Bullet(Movable):
     def draw(self):
         points = [math.cos(self.angle)*-5 + self.pos.x, math.sin(self.angle)*-5 + self.pos.y, math.cos(self.angle) + self.pos.x, math.sin(self.angle) + self.pos.y]
         return 2, pyglet.gl.GL_LINES, None, ('v2f', tuple(points))
+
+    def kill(self):
+        self.life = 0
 
