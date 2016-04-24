@@ -1,5 +1,7 @@
 
 # Created by https://www.gitignore.io/api/python
+#VIM swapfiles
+*.swp
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

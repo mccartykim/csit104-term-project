@@ -5,7 +5,9 @@ import pyglet
 SHIP_ACC = 1;
 SHIP_TURN = 5 * math.pi/180
 MAX_VELOCITY = 300
-
+#Score and game init constants
+HIT_POINTS=100
+INIT_LIVES=3
 
 #Helper function to create batch-friendly line loops for GL_LINES primatives
 def loop_lines(points):
@@ -189,3 +191,16 @@ class Bullet(Movable):
     def kill(self):
         self.life = 0
 
+"""#Keep track of player score and display it
+class HUD(Entity):
+    def __init__(self):
+       self.points = 0
+       self.lives = INIT_LIVES
+
+    def hit(self):
+        self.points+=HIT_POINTS
+
+    def draw(self):
+        #As the entity loop expects a tuple to unpack, we need to wrap this return
+        return pyglet.text.Label(str(self.points), x=0, y=0)
+        """

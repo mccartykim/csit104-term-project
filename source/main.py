@@ -1,5 +1,6 @@
 import pyglet
 from Entity import *
+from HUD import HUD
 from pyglet.window import key
 WIDTH = 800
 HEIGHT = 400
@@ -11,9 +12,11 @@ def add_entity(ent):
 window = pyglet.window.Window(WIDTH, HEIGHT)
 #Keys holds a handler that keeps track of keyboard state, part of pyglet
 keys = pyglet.window.key.KeyStateHandler()
+
 targetNo = 3; #number of asteroids to spawn
 window.push_handlers(keys)
 
+hud = HUD()
 entities = []
 
 player = Player(Vect2(x=window.width/2, y=window.height/2))
@@ -44,9 +47,10 @@ def on_draw():
                     #add two baby asteroids!
                     add_entity(Asteroid(asteroid.size-1,asteroid.pos.getCopy()))
                     add_entity(Asteroid(asteroid.size-1,asteroid.pos.getCopy()))
-                #Kill bullets
-                #FIXME: Maybe make this a function?
+                #Remove bullet
                 bullet.kill()
+                #Log the points
+                hud.hit()
     for e in entities:
         batch.add(*e.draw())
     #TODO: Lives
@@ -54,6 +58,7 @@ def on_draw():
         if not e.isAlive():
             pyglet.clock.unschedule(e.update)
             entities[:] = [e for e in entities if e.isAlive()]
+    hud.drawHUD()
+    #hudBatch.draw()
     batch.draw()
-
 pyglet.app.run()
