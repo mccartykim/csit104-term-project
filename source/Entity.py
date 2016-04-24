@@ -82,11 +82,11 @@ class Inertial(Movable):
 #Player is an object with movement, controlled by user input
 class Player(Inertial):
     def __init__(self, pos=Vect2(0,0)):
-        #I may move these defaults to the constructor later
         super(Player, self).__init__(mass = 1, position=pos)
         self.firing = False
         self.FIRE_DELAY = 1
         self.cooldown = self.FIRE_DELAY
+        self.alive = True
 
     #Controller is a dict containing the state of the controls
     def input(self, controller):
@@ -127,9 +127,11 @@ class Player(Inertial):
         if self.cooldown < self.FIRE_DELAY:
             self.cooldown += dt
 
-    #TODO: Destub me!
     def kill(self):
-        pass
+        self.alive = False
+
+    def isAlive(self):
+        return self.alive
 
 class Asteroid(Inertial):
     def __init__(self, size=3, position=Vect2(0,0)):
@@ -190,17 +192,3 @@ class Bullet(Movable):
 
     def kill(self):
         self.life = 0
-
-"""#Keep track of player score and display it
-class HUD(Entity):
-    def __init__(self):
-       self.points = 0
-       self.lives = INIT_LIVES
-
-    def hit(self):
-        self.points+=HIT_POINTS
-
-    def draw(self):
-        #As the entity loop expects a tuple to unpack, we need to wrap this return
-        return pyglet.text.Label(str(self.points), x=0, y=0)
-        """

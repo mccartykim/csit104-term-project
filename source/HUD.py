@@ -15,3 +15,12 @@ class HUD(object):
 
     def hit(self):
         self.points+=self.HIT_POINTS
+
+    def kill(self):
+        self.lives -=1
+
+    def has_lives(self):
+        return (self.lives > 0)
+
+    def get_life(self):
+        self.lives += 1
