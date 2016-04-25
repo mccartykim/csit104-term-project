@@ -177,8 +177,6 @@ class Asteroid(Inertial):
     def kill(self):
         self.alive = False
 
-#Consider particle class, for effects
-
 class Bullet(Movable):
     def __init__(self, pos, angle, lifespan=4, speed=200):
         vel = Vect2(math.cos(angle)*speed, math.sin(angle)*speed)
@@ -194,7 +192,65 @@ class Bullet(Movable):
 
     def draw(self):
         points = [math.cos(self.angle)*-5 + self.pos.x, math.sin(self.angle)*-5 + self.pos.y, math.cos(self.angle) + self.pos.x, math.sin(self.angle) + self.pos.y]
-        return 2, pyglet.gl.GL_LINES, None, ('v2f', tuple(points))
+        return 2, pyglet.gl.GL_LINES, None, ('v2f', tuple(points)), ('c3B', (255,0,0,255,0,0))
 
     def kill(self):
         self.life = 0
+
+class ParticleSpawner(Entity):
+    def __init__(self, pos, angle, spread, rate, particlefactory, active=False):
+        self.pos = pos
+        self.angle = angle
+        self.spread = spread
+        self.active = False
+        self.rate = rate
+        self.timer = rate
+        self.particlefactory = particlefactory
+        self.children = []
+
+    def update(self, dt):
+        if(self.timer < 0 and active):
+            self.timer = rate
+            self.children.append(particlefactory.spawn(self.pos, self._make_angle()))
+        else:
+            self.timer -= dt
+        for child in self.children:
+            child.update(dt)
+        self.children[:] = [child in self.children if child.isAlive()]
+
+    def _make_angle(self):
+        return random.uniform(self.angle-(self.spread/2), self.angle+(self.spread/2))
+
+    def draw(self):
+        for child in self.children:
+            child.draw()
+
+"""
+ParticleFactory defines particles for ParticleSpawner to emit.
+"""
+class ParticleFactory(object):
+    def __init__(self, speed=1, lifespan=3, color=(255,255,255)):
+        self.speed = speed
+        self.lifespan = lifespan
+        self.color = color
+
+
+    def spawn(self, pos, angle):
+        return Particle(pos=pos, angle=angle, speed=speed, color=color, lifespan=lifespan)
+
+
+    class Particle(Movable):
+        def __init__(self, pos, angle, speed, color, lifespan):
+            super(Particle, self).__init__(position=pos, velocity=( ( Vect2.fromAngle(angle) ) * speed))
+            self.color = color
+            self.lifespan=lifespan
+
+        def draw(self):
+            return 1, pyglet.gl.GL_POINTS, None, ('v2f', (self.pos.x, self.pos.y)), ('c3b', color)
+
+        def update(self, dt):
+            super().update(dt)
+            self.lifespan -= dt
+
+        def isAlive(self):
+            return (self.lifespan > 0)
