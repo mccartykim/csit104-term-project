@@ -87,6 +87,7 @@ class Player(Inertial):
         self.FIRE_DELAY = 1
         self.cooldown = self.FIRE_DELAY
         self.alive = True
+        self.invuln = 3 #3 seconds of invulnerability on spawning
 
     #Controller is a dict containing the state of the controls
     def input(self, controller):
@@ -126,9 +127,14 @@ class Player(Inertial):
             self.vel = self.vel.normalize() * MAX_VELOCITY
         if self.cooldown < self.FIRE_DELAY:
             self.cooldown += dt
+        if self.invuln > 0:
+            self.invuln -= dt
+            #print(self.invuln)
 
     def kill(self):
-        self.alive = False
+        #ignore call if in respawn period
+        if self.invuln < 0:
+            self.alive = False
 
     def isAlive(self):
         return self.alive
@@ -137,7 +143,7 @@ class Asteroid(Inertial):
     def __init__(self, size=3, position=Vect2(0,0)):
         #Asteroids come in 3 sizes: 3 is biggest, one is smallest.
         super(Asteroid, self).__init__(mass=size, position=position)
-        #FIXME: Magic constant, perhaps should trigger this with boolean
+        #FIXME: Magic constant
         self.addForce(Vect2.random()* 100)
         self.hit_radius = size*10
         self.size = size
@@ -174,7 +180,7 @@ class Asteroid(Inertial):
 #Consider particle class, for effects
 
 class Bullet(Movable):
-    def __init__(self, pos, angle, lifespan=5, speed=50):
+    def __init__(self, pos, angle, lifespan=4, speed=200):
         vel = Vect2(math.cos(angle)*speed, math.sin(angle)*speed)
         super(Bullet, self).__init__(position=pos, angle=angle, velocity=vel)
         self.life=lifespan

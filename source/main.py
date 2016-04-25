@@ -1,23 +1,32 @@
+#Tim McCarty
+#CSIT-104 Final Project Entry Point
+
+#Imported libraries and other modules in project.
+#Pyglet is a slightly lower-level take on Python graphics than PyGame as I understand it.
 import pyglet
 from Entity import *
 from HUD import HUD
 from pyglet.window import key
+
+#Target window size constant
 WIDTH = 800
 HEIGHT = 400
+targetNo = 3; #number of asteroids to spawn
 
+#function to simplify adding entities
 def add_entity(ent):
     entities.append(ent)
     pyglet.clock.schedule(ent.update)
 
+#function to spawn player
 def spawn_player():
     player = Player(Vect2(x=window.width/2, y=window.height/2))
     return player
 
+#Window object represents the game's window
 window = pyglet.window.Window(WIDTH, HEIGHT)
 #Keys holds a handler that keeps track of keyboard state, part of pyglet
 keys = pyglet.window.key.KeyStateHandler()
-
-targetNo = 3; #number of asteroids to spawn
 window.push_handlers(keys)
 
 hud = HUD()
@@ -32,26 +41,40 @@ def on_draw():
     player = [e for e in entities if isinstance(e, Player)][0]
     #map keys to input object
     #On a proper engine the controller would probably be its own class.
+    #That level of abstraction makes it easier to use keyboards, mice, and other controllers the user may have
     controller = {'acc': keys[key.W], 'left': keys[key.A], 'right':keys[key.D], 'fire':keys[key.SPACE]}
     player.input(controller)
+    #Batches hold vertexes to feed the graphics card in bulk, which is more efficient than drawing
+    #each item
     batch = pyglet.graphics.Batch()
+
+    #Bullet Spawning
     if player.isFiring():
         add_entity(Bullet(player.pos.getCopy(), player.angle))
+
+    #Asteroid Spawning
     asteroids = [e for e in entities if isinstance(e, Asteroid)]
     if len(asteroids) < targetNo:
         newAsteroid = Asteroid(3, Vect2(0,0))
         asteroids.append(newAsteroid)
         add_entity(newAsteroid)
-    #Loop over all the entities that are bullets
+
     for asteroid in asteroids:
         if player.overlaps(asteroid.hit_radius, asteroid.pos.getCopy()):
-            hud.kill()
             player.kill()
-            player = spawn_player()
-            add_entity(player)
-#TODO Invincibility on respawn
+            #Check if player is actually dead, it may be in invuln period
+            if (player.isAlive() != True):
+                player = spawn_player()
+                hud.kill()
+                add_entity(player)
+
 #TODO Gameover/Gamestart behavior
 #TODO Pause
+#TODO Thrust animation
+#TODO Invlun animation
+#TODO Particle debris?
+
+    #Process asteroid/bullet collisions
     for bullet in [e for e in entities if isinstance(e, Bullet)]:
         for asteroid in asteroids:
             if bullet.overlaps(asteroid.hit_radius, asteroid.pos.getCopy()):
@@ -65,14 +88,16 @@ def on_draw():
                 #Log the points
                 hud.hit()
 
+    #Batch graphics
     for e in entities:
         batch.add(*e.draw())
+
+    #Remove dead objects from loop and entity list
     for e in entities:
         if not e.isAlive():
             pyglet.clock.unschedule(e.update)
-    for e in entities:
-        if not e.isAlive():
-            entities[:] = [e for e in entities if e.isAlive()]
+    entities[:] = [e for e in entities if e.isAlive()]
+    #Finally draw the frame
     hud.drawHUD()
     batch.draw()
 pyglet.app.run()
