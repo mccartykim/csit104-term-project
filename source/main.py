@@ -35,6 +35,9 @@ entities = []
 player = spawn_player()
 add_entity(player)
 
+test_particles = ParticleSpawner(Vect2(WIDTH//2, HEIGHT//2), 0, math.pi/4, .01, ParticleFactory(speed=20,color=(255,0,0)), True)
+add_entity(test_particles)
+
 @window.event
 def on_draw():
     window.clear()
@@ -44,6 +47,12 @@ def on_draw():
     #That level of abstraction makes it easier to use keyboards, mice, and other controllers the user may have
     controller = {'acc': keys[key.W], 'left': keys[key.A], 'right':keys[key.D], 'fire':keys[key.SPACE]}
     player.input(controller)
+    test_particles.angle = (player.angle + math.pi)
+    test_particles.pos = player.pos.getCopy()
+    if controller['acc']:
+        test_particles.active = True
+    else:
+        test_particles.active = False
     #Batches hold vertexes to feed the graphics card in bulk, which is more efficient than drawing
     #each item
     batch = pyglet.graphics.Batch()

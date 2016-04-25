@@ -202,28 +202,37 @@ class ParticleSpawner(Entity):
         self.pos = pos
         self.angle = angle
         self.spread = spread
-        self.active = False
+        self.active = active
         self.rate = rate
         self.timer = rate
         self.particlefactory = particlefactory
         self.children = []
 
     def update(self, dt):
-        if(self.timer < 0 and active):
-            self.timer = rate
-            self.children.append(particlefactory.spawn(self.pos, self._make_angle()))
+        if(self.timer < 0 and self.active):
+            self.timer = self.rate
+            self.children.append(self.particlefactory.spawn(self.pos, self._make_angle()))
         else:
             self.timer -= dt
         for child in self.children:
             child.update(dt)
-        self.children[:] = [child in self.children if child.isAlive()]
+        self.children[:] = [child for child in self.children if child.isAlive()]
 
     def _make_angle(self):
         return random.uniform(self.angle-(self.spread/2), self.angle+(self.spread/2))
 
     def draw(self):
-        for child in self.children:
-            child.draw()
+        merged_out = [0, pyglet.gl.GL_POINTS, None,['v2f', []], ['c3B', []]]
+        for child_ in self.children:
+            child = child_.draw()
+            merged_out[0]+=1
+            merged_out[3][1].extend(child[3][1])
+            merged_out[4][1].extend(child[4][1])
+        merged_out[3][1] = tuple( merged_out[3][1] )
+        merged_out[3] = tuple( merged_out[3] )
+        merged_out[4][1] = tuple( merged_out[4][1] )
+        merged_out[4] = tuple( merged_out[4])
+        return tuple(merged_out)
 
 """
 ParticleFactory defines particles for ParticleSpawner to emit.
@@ -236,17 +245,17 @@ class ParticleFactory(object):
 
 
     def spawn(self, pos, angle):
-        return Particle(pos=pos, angle=angle, speed=speed, color=color, lifespan=lifespan)
+        return ParticleFactory.Particle(pos=pos, angle=angle, speed=self.speed, color=self.color, lifespan=self.lifespan)
 
 
     class Particle(Movable):
         def __init__(self, pos, angle, speed, color, lifespan):
-            super(Particle, self).__init__(position=pos, velocity=( ( Vect2.fromAngle(angle) ) * speed))
+            super(ParticleFactory.Particle, self).__init__(position=pos, velocity=( ( Vect2.fromAngle(angle) ) * speed))
             self.color = color
             self.lifespan=lifespan
 
         def draw(self):
-            return 1, pyglet.gl.GL_POINTS, None, ('v2f', (self.pos.x, self.pos.y)), ('c3b', color)
+            return 1, pyglet.gl.GL_POINTS, None, ('v2f', (self.pos.x, self.pos.y)), ('c3b', self.color)
 
         def update(self, dt):
             super().update(dt)
