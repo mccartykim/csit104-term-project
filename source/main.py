@@ -35,8 +35,8 @@ entities = []
 player = spawn_player()
 add_entity(player)
 
-test_particles = ParticleSpawner(Vect2(WIDTH//2, HEIGHT//2), 0, math.pi/4, .01, ParticleFactory(speed=20,color=(255,0,0)), True)
-add_entity(test_particles)
+exhaust = ParticleSpawner(Vect2(WIDTH//2, HEIGHT//2), 0, math.pi/4, .01, ParticleFactory(speed=20,color=(255,0,0)), True)
+add_entity(exhaust)
 
 @window.event
 def on_draw():
@@ -47,12 +47,12 @@ def on_draw():
     #That level of abstraction makes it easier to use keyboards, mice, and other controllers the user may have
     controller = {'acc': keys[key.W], 'left': keys[key.A], 'right':keys[key.D], 'fire':keys[key.SPACE]}
     player.input(controller)
-    test_particles.angle = (player.angle + math.pi)
-    test_particles.pos = player.pos.getCopy()
+    exhaust.angle = (player.angle + math.pi)
+    exhaust.pos = player.pos.getCopy()
     if controller['acc']:
-        test_particles.active = True
+        exhaust.active = True
     else:
-        test_particles.active = False
+        exhaust.active = False
     #Batches hold vertexes to feed the graphics card in bulk, which is more efficient than drawing
     #each item
     batch = pyglet.graphics.Batch()
@@ -81,13 +81,16 @@ def on_draw():
 #TODO Pause
 #TODO Thrust animation
 #TODO Invlun animation
-#TODO Particle debris?
+#TODO Particle debris on asteroid shoot?
+#TODO Consider Perler Noise for Asteroid shape
+#TODO Sound
 
     #Process asteroid/bullet collisions
     for bullet in [e for e in entities if isinstance(e, Bullet)]:
         for asteroid in asteroids:
             if bullet.overlaps(asteroid.hit_radius, asteroid.pos.getCopy()):
                 asteroid.kill()
+                add_entity(AsteroidDebris(asteroid.pos.getCopy()))
                 if asteroid.size > 1:
                     #add two baby asteroids!
                     add_entity(Asteroid(asteroid.size-1,asteroid.pos.getCopy()))

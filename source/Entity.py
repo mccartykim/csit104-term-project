@@ -263,3 +263,24 @@ class ParticleFactory(object):
 
         def isAlive(self):
             return (self.lifespan > 0)
+
+#Particle spawner that dies after given time
+class MortalEmitter(ParticleSpawner):
+    def __init__(self, pos, angle, spread, rate, particlefactory, lifespan, active=True):
+        super(MortalEmitter, self).__init__(pos, angle, spread, rate, particlefactory, active)
+        self.lifespan = lifespan
+
+    def update(self, dt):
+        super().update(dt)
+        self.lifespan -= dt
+        #Stop emitting new particles if the system will die in less time than the particles' lifespan
+        if (self.lifespan < self.particlefactory.lifespan):
+            self.active = False
+
+    def isAlive(self):
+        return ( self.lifespan > 0 )
+
+#Model for asteroid debris
+class AsteroidDebris(MortalEmitter):
+    def __init__(self, pos):
+        super(AsteroidDebris, self).__init__(pos, 0, 2*math.pi, 0.01, ParticleFactory(speed=60, color=(255,255,0), lifespan=.3), 1, active=True)
