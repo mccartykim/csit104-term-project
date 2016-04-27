@@ -114,12 +114,16 @@ class Player(Inertial):
     def draw(self):
         #Return a "data object" for pyglet's graphics.draw command.
         #front of the ship
+        if (self.invuln > 0):
+            color = (0,0,255);
+        else:
+            color = (255,255,255);
         bow = ( Vect2.fromAngle(self.angle) * 10 ) + self.pos
         port = (Vect2.fromAngle(self.angle + (120 * math.pi/180)) * 5) + self.pos
         starboard = (Vect2.fromAngle(self.angle - (120 * math.pi/180)) *5) + self.pos
         points = (bow.x, bow.y, port.x, port.y, starboard.x, starboard.y)
         points = loop_lines(points)
-        return len(points)//2, pyglet.gl.GL_LINES, None, ( 'v2f', points )
+        return len(points)//2, pyglet.gl.GL_LINES, None, ( 'v2f', points ), ('c3B', color * ( len(points)//2) )
 
     def update(self, dt):
         super().update(dt)
@@ -143,7 +147,6 @@ class Asteroid(Inertial):
     def __init__(self, size=3, position=Vect2(0,0)):
         #Asteroids come in 3 sizes: 3 is biggest, one is smallest.
         super(Asteroid, self).__init__(mass=size, position=position)
-        #FIXME: Magic constant
         self.addForce(Vect2.random()* 100)
         self.hit_radius = size*10
         self.size = size
