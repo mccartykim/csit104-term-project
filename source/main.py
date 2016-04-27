@@ -72,10 +72,11 @@ def on_draw():
         if player.overlaps(asteroid.hit_radius, asteroid.pos.getCopy()):
             player.kill()
             #Check if player is actually dead, it may be in invuln period
-            if (player.isAlive() != True):
+            if (player.isAlive() != True and hud.has_lives()):
                 player = spawn_player()
                 hud.kill()
                 add_entity(player)
+                #TODO: Game over state
 
 #TODO Gameover/Gamestart behavior
 #TODO Pause
