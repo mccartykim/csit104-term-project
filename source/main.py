@@ -79,9 +79,6 @@ def on_draw():
 
 #TODO Gameover/Gamestart behavior
 #TODO Pause
-#TODO Thrust animation
-#TODO Invlun animation
-#TODO Particle debris on asteroid shoot?
 #TODO Consider Perler Noise for Asteroid shape
 #TODO Sound
 
