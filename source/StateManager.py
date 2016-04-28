@@ -190,7 +190,7 @@ class StateManager(object):
 
     def game_over_loop(self, dt):
         self.window.clear()
-        label = pyglet.text.Label("Game over! Press S to restart, or ESC to quit", font_size=38, 
+        label = pyglet.text.Label("Game over! Press S to restart, or ESC to quit", font_size=24, 
             x=WIDTH//2, y=HEIGHT//2, anchor_x = 'center', anchor_y = 'center')
         label.draw()
         if self.keys[key.S]:

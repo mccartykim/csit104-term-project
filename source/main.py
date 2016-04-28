@@ -11,9 +11,12 @@ from HUD import HUD
 from pyglet.window import key
 from StateManager import StateManager
 
+RECORD = False
+frame = 0
 quit = False
 state = StateManager()
 
+clock.set_fps_limit(30)
 while (not quit):
         dt = clock.tick()
         state.window.switch_to()
@@ -21,5 +24,6 @@ while (not quit):
         state.loop(dt)
         quit = state.is_quit()
         state.window.flip()
-# TODO Consider Perler Noise for Asteroid shape
-# TODO Sound
+        if RECORD:
+            pyglet.image.get_buffer_manager().get_color_buffer().save("video/frame{:05}.png".format(frame))
+            frame+= 1
