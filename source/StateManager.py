@@ -12,7 +12,7 @@ import math
 # Target window size constant
 WIDTH = 800
 HEIGHT = 400
-targetNo = 3   # number of asteroids to spawn
+targetNo = 5   # number of asteroids to spawn
 DEBOUNCE = 1
 
 class StateManager(object):
@@ -121,10 +121,11 @@ class StateManager(object):
                         self.player.kill()
                         # Check if player is actually dead, it may be in invuln
                         # period
-                        if (self.player.isAlive() != True and self.hud.has_lives()):
+                        if (self.player.isAlive() != True):
+                            if (self.hud.has_lives()):
                                 self.spawn_player()
                                 self.hud.kill()
-                                # TODO: Game over state
+                            else: self.mode = "GAMEOVER"
         # Process asteroid/bullet collisions
         for bullet in [e for e in self.entities if isinstance(e, Bullet)]:
                 for asteroid in asteroids:
@@ -163,11 +164,16 @@ class StateManager(object):
             self.pause_loop(dt)
         elif self.mode == "SPLASH":
             self.splash_loop(dt)
+        elif self.mode == "GAMEOVER":
+            self.game_over_loop(dt)
+        else:
+            self.quit == True
+            print("Error: Debug: state.mode == Invalid state!")
         
 
     def pause_loop(self, dt):
         self.window.clear()
-        label = pyglet.text.Label("Game Paused: Press p to unpause, or ESC to quit", font_size=32, 
+        label = pyglet.text.Label("Game Paused: Press p to unpause, or ESC to quit", font_size=24, 
             x=WIDTH//2, y=HEIGHT//2, anchor_x = 'center', anchor_y = 'center')
         label.draw()
         if self.keys[key.P] and self.debounce_timer <= 0:
@@ -175,10 +181,20 @@ class StateManager(object):
             self.debounce_timer = DEBOUNCE
         elif self.keys[key.ESCAPE]: self.quit = True
 
-
     def splash_loop(self, dt):
         label = pyglet.text.Label("Rocks in Space: Press s to start", font_size=38, 
             x=WIDTH//2, y=HEIGHT//2, anchor_x = 'center', anchor_y = 'center')
         label.draw()
         if self.keys[key.S]: self.mode = "GAME"
         elif self.keys[key.ESCAPE]: self.quit = True
+
+    def game_over_loop(self, dt):
+        self.window.clear()
+        label = pyglet.text.Label("Game over! Press S to restart, or ESC to quit", font_size=38, 
+            x=WIDTH//2, y=HEIGHT//2, anchor_x = 'center', anchor_y = 'center')
+        label.draw()
+        if self.keys[key.S]:
+            self.mode = "GAME"
+            self._init_game()
+        elif self.keys[key.ESCAPE]: self.quit = True
+
