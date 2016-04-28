@@ -13,12 +13,16 @@ import math
 WIDTH = 800
 HEIGHT = 400
 targetNo = 3   # number of asteroids to spawn
+DEBOUNCE = 1
 
 class StateManager(object):
     def __init__(self):
         self.quit = False
         self._init_window()
         self._init_game()
+        self.mode = "SPLASH"
+        # Prevent bouncing on switching game modes
+        self.debounce_timer = DEBOUNCE 
         
 
     def _init_window(self):
@@ -59,9 +63,13 @@ class StateManager(object):
             'left': self.keys[key.A],
             'right': self.keys[key.D],
             'fire': self.keys[key.SPACE],
-            'quit': self.keys[key.ESCAPE]
+            'quit': self.keys[key.ESCAPE],
+            'pause': self.keys[key.P]
         }
         self.quit = controller['quit']
+        if controller['pause'] and self.debounce_timer <= 0:
+            self.mode = "PAUSE"
+            self.debounce_timer = DEBOUNCE
         self.player.input(controller)
         #turn on thrust effect if ship is accelerating
         self.exhaust.active = controller['acc']
@@ -90,7 +98,6 @@ class StateManager(object):
         batch.draw()
         self.hud.drawHUD()
 
-
     def spawn_bullets(self):
         if self.player.isFiring():
                 self.entities.append(
@@ -100,7 +107,6 @@ class StateManager(object):
                     )
                 )
 
-
     def spawn_asteroids(self):
         # Asteroid Spawning
         asteroids = [e for e in self.entities if isinstance(e, Asteroid)]
@@ -109,7 +115,6 @@ class StateManager(object):
                 self.entities.append(newAsteroid)
 
     def detect_collisions(self):
-
         asteroids = [e for e in self.entities if isinstance(e, Asteroid)]
         for asteroid in asteroids:
                 if self.player.overlaps(asteroid.hit_radius, asteroid.pos.getCopy()):
@@ -144,9 +149,36 @@ class StateManager(object):
                                 bullet.kill()
                                 # Log the points
                                 self.hud.hit()
+
     def is_quit(self):
         return self.quit
 
-    @self.window.event
-    def on_close():
-        close()
+    # Dispatch loop to the right function
+    def loop(self, dt):
+        if self.debounce_timer > 0:
+            self.debounce_timer -= dt
+        if self.mode == "GAME":
+            self.game_loop(dt)
+        elif self.mode == "PAUSE":
+            self.pause_loop(dt)
+        elif self.mode == "SPLASH":
+            self.splash_loop(dt)
+        
+
+    def pause_loop(self, dt):
+        self.window.clear()
+        label = pyglet.text.Label("Game Paused: Press p to unpause, or ESC to quit", font_size=32, 
+            x=WIDTH//2, y=HEIGHT//2, anchor_x = 'center', anchor_y = 'center')
+        label.draw()
+        if self.keys[key.P] and self.debounce_timer <= 0:
+            self.mode = "GAME"
+            self.debounce_timer = DEBOUNCE
+        elif self.keys[key.ESCAPE]: self.quit = True
+
+
+    def splash_loop(self, dt):
+        label = pyglet.text.Label("Rocks in Space: Press s to start", font_size=38, 
+            x=WIDTH//2, y=HEIGHT//2, anchor_x = 'center', anchor_y = 'center')
+        label.draw()
+        if self.keys[key.S]: self.mode = "GAME"
+        elif self.keys[key.ESCAPE]: self.quit = True

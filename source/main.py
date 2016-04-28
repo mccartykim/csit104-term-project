@@ -18,10 +18,8 @@ while (not quit):
         dt = clock.tick()
         state.window.switch_to()
         state.window.dispatch_events()
-        state.game_loop(dt)
+        state.loop(dt)
         quit = state.is_quit()
         state.window.flip()
-# TODO Gameover/Gamestart behavior
-# TODO Pause
 # TODO Consider Perler Noise for Asteroid shape
 # TODO Sound
