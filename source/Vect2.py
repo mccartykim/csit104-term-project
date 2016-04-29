@@ -1,6 +1,9 @@
 import math
 import random
 
+# A fairly simple vector object
+# Most functions were defined as I needed them,
+# instead of trying to define a robust linear algebra system.
 class Vect2(object):
     def __init__(self, x=0, y=0):
         self.x=x
@@ -40,9 +43,11 @@ class Vect2(object):
     def getCopy(self):
         return Vect2(self.x, self.y)
 
+# Find the distance between two vectors (useful for position vectors)
     def getDistance(self, other):
         return math.sqrt((other.x - self.x)**2 + (other.y-self.y)**2 )
 
+# Get a random normalized vector
     @staticmethod
     def random():
         return Vect2.fromAngle(random.uniform(0, 2*math.pi))

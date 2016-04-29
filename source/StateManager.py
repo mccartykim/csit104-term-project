@@ -25,6 +25,7 @@ class StateManager(object):
         self.debounce_timer = DEBOUNCE 
         
 
+# Create a window for the game
     def _init_window(self):
 # Window object represents the game's window
         self.window = pyglet.window.Window(WIDTH, HEIGHT)
@@ -33,7 +34,7 @@ class StateManager(object):
         self.window.push_handlers(self.keys)
 
 
-    # Stage the game
+    # Stage the game or return it to its initial state
     def _init_game(self):
         self.hud = HUD()
         self.entities = []
@@ -46,10 +47,12 @@ class StateManager(object):
             True)
         self.entities.append(self.exhaust)
 
+    #Create a new instance of the Player class at the center of the screen
     def spawn_player(self):
         self.player = Player(Vect2(x=self.window.width/2, y=self.window.height/2))
         self.entities.append(self.player)
 
+    # This function runs when the look is in game mode, and has all the updating/drawing logic
     def game_loop(self, dt):
         #Clear frame before looping
         self.window.clear()
@@ -98,6 +101,7 @@ class StateManager(object):
         batch.draw()
         self.hud.drawHUD()
 
+    # Determine if a bullet should be spawned, and then spawns a bullet
     def spawn_bullets(self):
         if self.player.isFiring():
                 self.entities.append(
@@ -107,6 +111,7 @@ class StateManager(object):
                     )
                 )
 
+    # Maintain a minimum asteroid population
     def spawn_asteroids(self):
         # Asteroid Spawning
         asteroids = [e for e in self.entities if isinstance(e, Asteroid)]
@@ -114,6 +119,7 @@ class StateManager(object):
                 newAsteroid = Asteroid(3, Vect2(0, 0))
                 self.entities.append(newAsteroid)
 
+    # This function determines if any objects are colliding in a meaningful way for the game 
     def detect_collisions(self):
         asteroids = [e for e in self.entities if isinstance(e, Asteroid)]
         for asteroid in asteroids:
@@ -151,6 +157,7 @@ class StateManager(object):
                                 # Log the points
                                 self.hud.hit()
 
+    # Inform the main function if the player requested to quit
     def is_quit(self):
         return self.quit
 
@@ -171,6 +178,7 @@ class StateManager(object):
             print("Error: Debug: state.mode == Invalid state!")
         
 
+    # Pause screen
     def pause_loop(self, dt):
         self.window.clear()
         label = pyglet.text.Label("Game Paused: Press p to unpause, or ESC to quit", font_size=24, 
@@ -181,6 +189,7 @@ class StateManager(object):
             self.debounce_timer = DEBOUNCE
         elif self.keys[key.ESCAPE]: self.quit = True
 
+# Splash screen
     def splash_loop(self, dt):
         label = pyglet.text.Label("Rocks in Space: Press s to start", font_size=38, 
             x=WIDTH//2, y=HEIGHT//2, anchor_x = 'center', anchor_y = 'center')
@@ -188,6 +197,7 @@ class StateManager(object):
         if self.keys[key.S]: self.mode = "GAME"
         elif self.keys[key.ESCAPE]: self.quit = True
 
+# Game over screen
     def game_over_loop(self, dt):
         self.window.clear()
         label = pyglet.text.Label("Game over! Press S to restart, or ESC to quit", font_size=24, 

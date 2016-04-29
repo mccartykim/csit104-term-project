@@ -23,6 +23,7 @@ def loop_lines(points):
     out.extend(points[0:2])
     return tuple(out)
 
+# Abstract class that defines common functions, but doesn't implement them
 class Entity(object):
     #Process user input, if relevant.
     def input(self, controller):
@@ -36,6 +37,7 @@ class Entity(object):
     def draw(self):
         pass
 
+    # Tells the game loop whether or not to discard this object
     def isAlive(self):
         #Meant to be overriden on mortal objects
         return True
@@ -49,7 +51,7 @@ class Movable(Entity):
         self.angle = angle
         self.bounds = bounds
 
-    #generate new position and velocity.  Let DT be the time since the last update.
+    #generate new position and velocity.  Let DT be the time since the last update. Also, check bounds and wrap to the other side if out of bounds.
     def update(self, dt):
         self.vel += self.acc
         self.acc *= 0 #Acceleration must be added each time.
@@ -67,10 +69,12 @@ class Movable(Entity):
     def addAcc(self, acc):
         self.acc += acc
 
+    # Very simple collision detection.  As the ship and bullet are relatively small, I was able to get away with just checking their center
     def overlaps(self, hitRadius, hitPos):
         #if this entity is inside the other entity's radius, return true
         return (self.pos.getDistance(hitPos) < hitRadius)
 
+#A movable object with mass
 class Inertial(Movable):
     def __init__(self, mass=1.0, **kwargs):
         super(Inertial, self).__init__(**kwargs)
